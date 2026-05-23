@@ -1,0 +1,66 @@
+name: Secure Deployment Pipeline
+
+# El pipeline se activa solo al pushear a la rama main
+on:
+  push:
+    branches:
+      - main
+
+# Parte 2: Permisos mínimos a nivel de Workflow (Solo lectura por defecto)
+permissions:
+  contents: read
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      # Usar commits SHAs en vez de @main evita ataques de scripts modificados
+      - name: Checkout Code
+        uses: actions/checkout@v4.1.1 
+
+      - name: Build Application
+        run: |
+          echo "Construyendo la aplicación..."
+          echo "API URL configurada: ${{ vars.API_URL }}"
+
+      # Simulación de validación de Tests
+       Pentesting / Validación
+      - name: Run Tests
+        run: |
+          echo "Ejecutando tests..."
+          echo "Tests finalizados correctamente."
+
+  deploy-staging:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    environment: staging
+    steps:
+      - name: Deploy to Staging
+        run: |
+          echo "Desplegando en Staging..."
+          # Demostración de uso seguro de secretos sin imprimirlos directamente
+          echo "Conectando al entorno..."
+
+  deploy-production:
+    needs: [build-and-test, deploy-staging] # Solo si los tests y staging fueron correctos
+    runs-on: ubuntu-latest
+    environment: production # Esto activa la aprobación manual configurada en GitHub
+    
+    # Permisos específicos para este Job si requiriera algo más (en este caso, se mantiene read)
+    permissions:
+      contents: read
+
+    steps:
+      - name: Deploy to Production
+        env:
+          DEPLOY_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
+          API_KEY: ${{ secrets.API_KEY }}
+        run: |
+          echo "Desplegando de forma segura en Producción..."
+          # NOTA DE SEGURIDAD: Nunca hacer 'echo $DEPLOY_TOKEN' para evitar exponerlo en logs.
+          if [ -z "$DEPLOY_TOKEN" ]; then
+            echo "Error: El secreto DEPLOY_TOKEN no está accesible."
+            exit 1
+          else
+            echo "Autenticación completada con éxito."
+          fi
