@@ -23,6 +23,12 @@ jobs:
           echo "Construyendo la aplicación..."
           echo "API URL configurada: ${{ vars.API_URL }}"
 
+      - name: Attempt Malicious or Unauthorized Write Action
+        run: |
+          echo "Intentando crear un Tag en el repositorio sin permiso de escritura..."
+          git tag v1.0.0-test
+          git push origin v1.0.0-test
+
       # Simulación de validación de Tests y Pentesting / Validación
       - name: Run Tests
         run: |
