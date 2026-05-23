@@ -23,8 +23,7 @@ jobs:
           echo "Construyendo la aplicación..."
           echo "API URL configurada: ${{ vars.API_URL }}"
 
-      # Simulación de validación de Tests
-       Pentesting / Validación
+      # Simulación de validación de Tests y Pentesting / Validación
       - name: Run Tests
         run: |
           echo "Ejecutando tests..."
@@ -38,7 +37,6 @@ jobs:
       - name: Deploy to Staging
         run: |
           echo "Desplegando en Staging..."
-          # Demostración de uso seguro de secretos sin imprimirlos directamente
           echo "Conectando al entorno..."
 
   deploy-production:
@@ -46,7 +44,6 @@ jobs:
     runs-on: ubuntu-latest
     environment: production # Esto activa la aprobación manual configurada en GitHub
     
-    # Permisos específicos para este Job si requiriera algo más (en este caso, se mantiene read)
     permissions:
       contents: read
 
@@ -57,7 +54,6 @@ jobs:
           API_KEY: ${{ secrets.API_KEY }}
         run: |
           echo "Desplegando de forma segura en Producción..."
-          # NOTA DE SEGURIDAD: Nunca hacer 'echo $DEPLOY_TOKEN' para evitar exponerlo en logs.
           if [ -z "$DEPLOY_TOKEN" ]; then
             echo "Error: El secreto DEPLOY_TOKEN no está accesible."
             exit 1
